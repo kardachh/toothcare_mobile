@@ -1,20 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {NavigationContainer} from "@react-navigation/native";
+import * as config from "./settings.json"
+import {TabNavigator} from "./src/navigations/navigation";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    console.log(config.settings.url)
+    return (
+        <NavigationContainer>
+            {/* СТРОКА СВЕРХУ ТЕЛЕФОНА (заряд, сеть, время) */}
+            <TabNavigator />
+        </NavigationContainer>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
