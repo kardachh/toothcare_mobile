@@ -1,13 +1,16 @@
 import {NavigationContainer} from "@react-navigation/native";
-import * as config from "./settings.json"
 import {TabNavigator} from "./src/navigations/navigation";
+import React, {useState} from "react";
+import {store} from "./src/redux";
+import {Provider} from "react-redux";
 
 export default function App() {
-    console.log(config.settings.url)
     return (
-        <NavigationContainer>
-            {/* СТРОКА СВЕРХУ ТЕЛЕФОНА (заряд, сеть, время) */}
-            <TabNavigator />
-        </NavigationContainer>
+        <Provider store={store}>
+            <NavigationContainer>
+                <TabNavigator />
+            </NavigationContainer>
+        </Provider>
+
     );
 }
