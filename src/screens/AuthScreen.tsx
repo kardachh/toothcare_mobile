@@ -8,14 +8,15 @@ import {
     KeyboardAvoidingView,
     Platform, TouchableWithoutFeedback, Keyboard, Alert
 } from "react-native";
-import {checkUser, getUsers} from "../api";
 import {useAppDispatch} from "../redux/hooks";
 import {setAuth} from "../redux/store";
-import {createNavigationContainerRef, useNavigationContainerRef} from "@react-navigation/native";
+import {useAPI} from "../api";
+import {GlobalStyles} from "../GlobalStyles";
 
 export const AuthScreen = (props:any) => {
     const [login, changeLogin] = useState<string>('')
     const [password, changePassword] = useState<string>('')
+    const {authUser} = useAPI()
     const dispatch = useAppDispatch()
     const navigation = props.navigation;
     const createButtonAlert = ({
@@ -24,8 +25,7 @@ export const AuthScreen = (props:any) => {
                                }: { title: string, description: string }) => Alert.alert(title, description, [{text: "OK"}])
 
     const onLoginPress = async () => {
-        if (await checkUser(login, password)) {
-            createButtonAlert({title: "Успешная авторизация", description: "Переход на главную..."})
+        if (await authUser(login, password)){
             dispatch(setAuth(true))
             navigation.replace(props.route.params.navigationKey)
             navigation.reset({
@@ -38,9 +38,9 @@ export const AuthScreen = (props:any) => {
 
     }
 
-    return <KeyboardAvoidingView style={styles.page} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    return <KeyboardAvoidingView style={GlobalStyles.page} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.page}>
+            <View style={GlobalStyles.page}>
                 <View style={styles.block}>
                     <View style={styles.blockInput}>
                         <Text style={styles.label}>Логин:</Text>

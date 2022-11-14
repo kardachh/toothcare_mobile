@@ -1,11 +1,13 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ClientsStackNavigator, MainStackNavigator, ServicesStackNavigator} from './stacks';
 import HomeIcon from '../assets/home';
-import { ServicesScreen } from '../screens/ServicesScreen';
 import ClientIcon from '../assets/clients';
 import ServicesIcon from '../assets/services';
-import { TabNames } from './screens';
-import {createNavigationContainerRef} from "@react-navigation/native";
+import {TabNames} from './screens';
+import {useAppDispatch} from "../redux/hooks";
+import {useEffect} from "react";
+import {setClients, setServices} from "../redux/store";
+import {useAPI} from "../api";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,16 +15,24 @@ const getIconColor = ({focused}: { focused: boolean }) => {
     return focused ? '#333333' : '#BDBDBD';
 };
 export const TabNavigator = () => {
+    const {getClients, getServices} = useAPI()
+    const dispatch = useAppDispatch()
+
+    useEffect(()=>{
+        getClients().then(r=>dispatch(setClients(r)))
+        getServices().then(r=>dispatch(setServices(r)))
+    })
+
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Navigator screenOptions={{headerShown: false}}>
             <Tab.Screen
                 name={TabNames.Main}
                 component={MainStackNavigator}
                 options={{
                     title: 'Главная',
                     tabBarActiveTintColor: 'black',
-                    tabBarIcon: ({ focused }) => (
-                        <HomeIcon color={getIconColor({focused: focused})} />
+                    tabBarIcon: ({focused}) => (
+                        <HomeIcon color={getIconColor({focused: focused})}/>
                     ),
                 }}
             />
@@ -32,8 +42,8 @@ export const TabNavigator = () => {
                 options={{
                     title: 'Клиенты',
                     tabBarActiveTintColor: 'black',
-                    tabBarIcon: ({ focused }) => (
-                        <ClientIcon color={getIconColor({focused: focused})} />
+                    tabBarIcon: ({focused}) => (
+                        <ClientIcon color={getIconColor({focused: focused})}/>
                     ),
                 }}
             />
@@ -43,8 +53,8 @@ export const TabNavigator = () => {
                 options={{
                     title: 'Услуги',
                     tabBarActiveTintColor: 'black',
-                    tabBarIcon: ({ focused }) => (
-                        <ServicesIcon color={getIconColor({focused: focused})} />
+                    tabBarIcon: ({focused}) => (
+                        <ServicesIcon color={getIconColor({focused: focused})}/>
                     ),
                 }}
             />

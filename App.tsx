@@ -1,16 +1,20 @@
 import {NavigationContainer} from "@react-navigation/native";
 import {TabNavigator} from "./src/navigations/navigation";
-import React, {useState} from "react";
+import React from "react";
 import {store} from "./src/redux";
 import {Provider} from "react-redux";
+import {StatusBar} from "expo-status-bar";
+import {ActionSheetProvider} from "@expo/react-native-action-sheet";
 
 export default function App() {
     return (
-        <Provider store={store}>
-            <NavigationContainer>
-                <TabNavigator />
-            </NavigationContainer>
-        </Provider>
-
+        <ActionSheetProvider>
+            <Provider store={store}>
+                <StatusBar/>
+                <NavigationContainer>
+                    <TabNavigator/>
+                </NavigationContainer>
+            </Provider>
+        </ActionSheetProvider>
     );
 }

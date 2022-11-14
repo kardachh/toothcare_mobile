@@ -5,6 +5,9 @@ import {ClientsScreen} from "../screens/ClientsScreen";
 import {useAppSelector} from "../redux/hooks";
 import {ClientsNames, MainNames} from "./screens";
 import {ServicesScreen} from "../screens/ServicesScreen";
+import {CalendarScreen} from "../screens/CalendarScreen";
+import {ClientEditScreen} from "../screens/ClientEditScreen";
+import {OrderEditScreen} from "../screens/EditOrderScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +31,8 @@ export const MainStackNavigator = () => {
         auth ?
             <Stack.Navigator>
                 <Stack.Screen name={MainNames.Main} component={MainScreen} options={getNavigatorOptions("Главная")}/>
+                <Stack.Screen name={MainNames.Calendar} component={CalendarScreen} options={getNavigatorOptions("Выберите день")}/>
+                <Stack.Screen name={MainNames.OrderEdit} component={OrderEditScreen} options={getNavigatorOptions("Новая запись")}/>
             </Stack.Navigator>
             : <Stack.Navigator>
                 <Stack.Screen name={MainNames.Auth} component={AuthScreen} options={getNavigatorOptions("Авторизация")}
@@ -41,11 +46,13 @@ export const ClientsStackNavigator = () => {
 
     return (
         auth ?
-            <Stack.Navigator initialRouteName={"ClientsScreen"}>
+            <Stack.Navigator initialRouteName={ClientsNames.Clients}>
                 <Stack.Screen name={ClientsNames.Clients} component={ClientsScreen}
                               options={getNavigatorOptions("Клиенты")}/>
+                <Stack.Screen name={ClientsNames.ClientEdit} component={ClientEditScreen}
+                              options={getNavigatorOptions("Новый клиент")}/>
             </Stack.Navigator>
-            : <Stack.Navigator initialRouteName={"ClientsScreen"}>
+            : <Stack.Navigator>
                 <Stack.Screen name={ClientsNames.Auth} component={AuthScreen} options={getNavigatorOptions("Авторизация")}
                               initialParams={{navigationKey: "ClientsScreen"}}/>
             </Stack.Navigator>

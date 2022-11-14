@@ -5,12 +5,15 @@ export enum TabNames {
 }
 
 export enum MainNames {
+    "Calendar" = "CalendarScreen",
     'Main' = "MainScreen",
-    "Auth" = "AuthScreen"
+    "Auth" = "AuthScreen",
+    "OrderEdit" = "OrderEditScreen",
 }
 
 export enum ClientsNames {
     "Clients" = "ClientsScreen",
-    "Auth" = "AuthScreen"
+    "Auth" = "AuthScreen",
+    "ClientEdit" = "ClientEditScreen"
 }
 
