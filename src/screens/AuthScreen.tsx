@@ -65,7 +65,7 @@ export const AuthScreen = (props:any) => {
                     </View>
                 </View>
                 <View style={[styles.block, styles.blockButton]}>
-                    <TouchableOpacity style={styles.button} onPress={onLoginPress}>
+                    <TouchableOpacity style={styles.select} onPress={onLoginPress}>
                         <Text style={styles.buttonText}>
                             {"Продолжить"}
                         </Text>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         padding: 15,
         fontSize: 18
     },
-    button: {
+    select: {
         borderWidth: 1,
         borderRadius: 50,
         padding: 15,

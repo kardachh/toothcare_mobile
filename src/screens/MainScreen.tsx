@@ -2,11 +2,11 @@ import React, {useCallback, useEffect, useState} from "react";
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useAPI} from "../api";
 import CalendarIcon from "../assets/caledar";
-import {Order} from "../types";
+import {Client, Order} from "../types";
 import {RoundedBlock} from "../components/RoundedBlock";
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
-import {MainNames} from "../navigations/screens";
-import {format,addDays,subDays} from "date-fns";
+import {ClientsNames, MainNames} from "../navigations/screens";
+import {addDays, format, subDays} from "date-fns";
 import {ru} from "date-fns/locale";
 import Loader from "../components/Loader";
 import {setAuth, setSelectedDate, setUser} from "../redux/store";
@@ -14,37 +14,37 @@ import {GlobalStyles} from "../GlobalStyles";
 import LogoutIcon from "../assets/logout";
 import ArrowIcon from "../assets/arrow";
 import PlusIcon from "../assets/plus";
+import {useActionSheet} from "@expo/react-native-action-sheet";
 
 const getNumber = ({t}: { t: any }) => +t.toString().replace(/:/g, '');
 
 export const MainScreen = ({navigation}: { navigation: any }) => {
-    const {getOrder, getOrdersForDay} = useAPI();
+    const {getOrder, getOrdersForDay, deleteDocFromDb} = useAPI();
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false)
+    const { showActionSheetWithOptions } = useActionSheet();
     const {selectedDate, user} = useAppSelector(state => state.slice)
     const [orders, setOrders] = useState<any>(null)
     const dispatch = useAppDispatch();
 
     const getData = () => {
+        setIsDataLoaded(false)
         getOrdersForDay(selectedDate).then(async orders_ids => {
             const queries: any = []
             orders_ids.forEach((order_id, index) => {
-                // console.log(order_id)
                 queries.push(getOrder(order_id))
             })
-            Promise.all(queries).then(value => {
-                // console.log(value)
-                setOrders(value.filter((order: any) => user.id === order.user).sort(({time: a}: any, {time: b}: any) => getNumber({t: a}) - getNumber({t: b})))
+            Promise.all(queries).then(value => setOrders(value.filter((order: any) => user.id === order.user).sort(({time: a}: any, {time: b}: any) => getNumber({t: a}) - getNumber({t: b})))).catch(e => {
+                console.log(e)
             })
         });
     }
 
     useEffect(() => {
-        setIsDataLoaded(false)
         getData()
     }, [selectedDate, user])
 
     useEffect(() => {
-        setIsDataLoaded(false)
+        // console.error(orders)
         orders ? setIsDataLoaded(true) : setIsDataLoaded(false)
     }, [orders])
 
@@ -56,12 +56,12 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                     dispatch(setUser(null))
                     console.log('logout');
                 }}>
-                    <LogoutIcon />
+                    <LogoutIcon/>
                 </TouchableOpacity>
             ),
             headerRight: () => (
                 <TouchableOpacity onPress={() => {
-                    navigation.push(MainNames.OrderEdit,{})
+                    navigation.push(MainNames.OrderEdit, {onPress:getData})
                 }}>
                     <PlusIcon/>
                 </TouchableOpacity>
@@ -69,8 +69,33 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
         });
     }, [navigation]);
 
+    const onPressOrderItem = (order:Order) => {
+        const options = ['Отменить', 'Изменить', 'Отмена'];
+        const destructiveButtonIndex = 0;
+        const cancelButtonIndex = 2;
+
+        showActionSheetWithOptions({
+            options,
+            cancelButtonIndex,
+            destructiveButtonIndex
+        }, async (selectedIndex) => {
+            switch (selectedIndex) {
+                case 1:
+                    navigation.push(MainNames.OrderEdit, {order: order, onPress: getData})
+                    break;
+
+                case destructiveButtonIndex:
+                    deleteDocFromDb("orders", order.id!).then(()=>getData())
+                    break;
+
+                case cancelButtonIndex:
+                // Canceled
+            }
+        });
+    }
+
     const renderOrderItem = useCallback(({item}: { item: Order }) => {
-        return <RoundedBlock>
+        return <RoundedBlock info={item} onPress={()=>onPressOrderItem(item)}>
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                 <Text style={{fontSize: 20}}>
                     {`${item.time}`}
@@ -99,15 +124,15 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginRight: 20
+                // marginRight: 20
             }}>
                 <TouchableOpacity
                     style={styles.datePickerArrow}
                     onPress={() => {
-                        dispatch(setSelectedDate(subDays(selectedDate,1)))
+                        dispatch(setSelectedDate(subDays(selectedDate, 1)))
                     }}
                 >
-                   <ArrowIcon />
+                    <ArrowIcon/>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.datePicker}
@@ -120,19 +145,19 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                 <TouchableOpacity
                     style={styles.datePickerArrow}
                     onPress={() => {
-                        dispatch(setSelectedDate(addDays(selectedDate,1)))
+                        dispatch(setSelectedDate(addDays(selectedDate, 1)))
                     }}
                 >
-                    <ArrowIcon style={{transform:[{ rotate: "180deg" }]}}/>
+                    <ArrowIcon style={{transform: [{rotate: "180deg"}]}}/>
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.calendarIconParent}>
-                <CalendarIcon/>
-            </TouchableOpacity>
+            {/*<TouchableOpacity style={styles.calendarIconParent} onPress={()=>navigation.push(MainNames.EmploymentSchedule)}>*/}
+            {/*    <CalendarIcon/>*/}
+            {/*</TouchableOpacity>*/}
         </View>
         {orders && orders.length !== 0 ?
-            <View style={{flex:1}}>
+            <View style={{flex: 1}}>
                 <Loader isDataLoaded={isDataLoaded}/>
                 <FlatList data={orders} renderItem={renderOrderItem}/>
             </View>

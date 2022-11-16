@@ -6,7 +6,7 @@ import ServicesIcon from '../assets/services';
 import {TabNames} from './screens';
 import {useAppDispatch} from "../redux/hooks";
 import {useEffect} from "react";
-import {setClients, setServices} from "../redux/store";
+import {setClients, setServices, setUsers} from "../redux/store";
 import {useAPI} from "../api";
 
 const Tab = createBottomTabNavigator();
@@ -15,12 +15,13 @@ const getIconColor = ({focused}: { focused: boolean }) => {
     return focused ? '#333333' : '#BDBDBD';
 };
 export const TabNavigator = () => {
-    const {getClients, getServices} = useAPI()
+    const {getClients, getServices, getUsers} = useAPI()
     const dispatch = useAppDispatch()
 
     useEffect(()=>{
         getClients().then(r=>dispatch(setClients(r)))
         getServices().then(r=>dispatch(setServices(r)))
+        getUsers().then(r=>dispatch(setUsers(r)))
     })
 
     return (

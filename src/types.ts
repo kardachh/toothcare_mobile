@@ -16,14 +16,17 @@ export type Client = {
 export type User = {
     id: string
     login?: string,
-    password?: string
+    password?: string,
+    FirstName?: string,
+    LastName?: string,
+    SecondName?: string
 }
 
 export type Order = {
-    id: string,
+    id?: string,
     date: string,
     time: string,
-    user: string,
+    user: User,
     client: Client,
     service: Service
 }

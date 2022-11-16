@@ -1,6 +1,6 @@
 import {appDB} from "../firebaseConfig";
 import {addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, updateDoc, where,} from "firebase/firestore";
-import {Client, Service} from "./types";
+import {Client, Order, Service, User} from "./types";
 import {useAppDispatch} from "./redux/hooks";
 import {setUser} from "./redux/store";
 import clients from "./assets/clients";
@@ -49,6 +49,20 @@ export const useAPI = () => {
         return services
     };
 
+    const getUsers: () => Promise<User[]> = async () => {
+        const querySnapshot = await getDocs(collection(dbFirestore, "users"));
+        const users: User[] = [];
+        querySnapshot.forEach((doc) => {
+            users.push({
+                FirstName: doc.data().FirstName,
+                LastName: doc.data().LastName,
+                SecondName: doc.data().SecondName,
+                id: doc.id
+            })
+        })
+        return users
+    };
+
     const getClient = async (id: string) => {
         const snap = await getDoc(doc(dbFirestore, "clients", id));
         if (snap.exists()) {
@@ -87,8 +101,8 @@ export const useAPI = () => {
                 ({id: id}),
                 ({date: snap.data().date}),
                 ({time: snap.data().time}),
-                getDoc(snap.data().client).then((res) => ({client: res.data()})),
-                getDoc(snap.data().service).then((res) => ({service: res.data()})),
+                getDoc(snap.data().client).then((res) => ({client: {...res.data() as Object, id: res.id}})),
+                getDoc(snap.data().service).then((res) => ({service: {...res.data() as Object, id: res.id}})),
                 getDoc(snap.data().user).then((res) => ({user: res.id})),
             ]).then((values) => {
                 const order = {}
@@ -111,8 +125,6 @@ export const useAPI = () => {
         await updateDoc(doc(dbFirestore,collectionName,idDoc), newInfo)
     }
 
-    // const
-
     const getOrdersForDay = async (date: Date = new Date()) => {
         const q = query(
             collection(dbFirestore, "orders"),
@@ -125,6 +137,29 @@ export const useAPI = () => {
         });
     };
 
+    const addOrder: (order: Order) => Promise<any> = async (order) => {
+        await addDoc(collection(dbFirestore, "orders"), {
+            client: doc(dbFirestore, "clients", `${order.client.id}`),
+            date: `${order.date}`,
+            service: doc(dbFirestore, "services", `${order.service.id}`),
+            time: `${order.time}`,
+            user: doc(dbFirestore, "users", `${order.user.id}`),
+        });
+        // console.log('Added document with ID: ', res.id);
+    }
+
+    const updateOrder: (info:Order) => Promise<void> = async (info) => {
+        // console.log("from api.ts",info, info.id)
+        const newInfo = {
+            client: doc(dbFirestore, "clients", `${info.client.id}`),
+            date: `${info.date}`,
+            service: doc(dbFirestore, "services", `${info.service.id}`),
+            time: `${info.time}`,
+            user: doc(dbFirestore, "users", `${info.user.id}`),
+        }
+        // console.log("from api.ts",newInfo)
+        await updateDoc(doc(dbFirestore,"orders",info.id!), newInfo)
+    }
 
     return {
         authUser,
@@ -135,6 +170,9 @@ export const useAPI = () => {
         getOrder,
         getOrdersForDay,
         addClient,
+        getUsers,
+        addOrder,
+        updateOrder,
         updateDocFromDb,
         deleteDocFromDb,
     };

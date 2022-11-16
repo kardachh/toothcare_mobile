@@ -8,11 +8,12 @@ import {ServicesScreen} from "../screens/ServicesScreen";
 import {CalendarScreen} from "../screens/CalendarScreen";
 import {ClientEditScreen} from "../screens/ClientEditScreen";
 import {OrderEditScreen} from "../screens/EditOrderScreen";
+import {EmploymentScheduleScreen} from "../screens/EmploymentScheduleScreen";
 
 const Stack = createNativeStackNavigator();
 
-const getNavigatorOptions = (title: string, props?: any) => {
-    return () => ({
+const getNavigatorOptions = (title: string, props?: any) =>
+    () => ({
         headerTitleAllowFontScaling: true,
         headerTitle: title,
         headerBackTitle: ' ',
@@ -21,7 +22,6 @@ const getNavigatorOptions = (title: string, props?: any) => {
         headerShown: true,
         ...props,
     });
-};
 
 
 export const MainStackNavigator = () => {
@@ -33,6 +33,7 @@ export const MainStackNavigator = () => {
                 <Stack.Screen name={MainNames.Main} component={MainScreen} options={getNavigatorOptions("Главная")}/>
                 <Stack.Screen name={MainNames.Calendar} component={CalendarScreen} options={getNavigatorOptions("Выберите день")}/>
                 <Stack.Screen name={MainNames.OrderEdit} component={OrderEditScreen} options={getNavigatorOptions("Новая запись")}/>
+                <Stack.Screen name={MainNames.EmploymentSchedule} component={EmploymentScheduleScreen} options={getNavigatorOptions("123",{orientation:"landscape"})}/>
             </Stack.Navigator>
             : <Stack.Navigator>
                 <Stack.Screen name={MainNames.Auth} component={AuthScreen} options={getNavigatorOptions("Авторизация")}

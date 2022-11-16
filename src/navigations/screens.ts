@@ -9,6 +9,7 @@ export enum MainNames {
     'Main' = "MainScreen",
     "Auth" = "AuthScreen",
     "OrderEdit" = "OrderEditScreen",
+    "EmploymentSchedule" = "EmploymentScheduleScreen"
 }
 
 export enum ClientsNames {

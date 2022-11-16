@@ -68,7 +68,7 @@ export const ClientEditScreen = (props: any) => {
             updateDocFromDb("clients", client.id!, {
                 FirstName: firstName,
                 LastName: lastName,
-                 SecondName: secondName,
+                SecondName: secondName,
                 phone: phone
             }).then(() => {
                 props.route.params.onPress()
@@ -100,16 +100,17 @@ export const ClientEditScreen = (props: any) => {
                         placeholder={"Введите фамилию"}
                         onChangeText={setLastName}
                     />
-                </View><View style={styles.blockInput}>
-                    <Text style={styles.label}>Отчество:</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={secondName}
-                        autoCapitalize='none'
-                        placeholder={"Введите отчество"}
-                        onChangeText={setSecondName}
-                    />
                 </View>
+                    <View style={styles.blockInput}>
+                        <Text style={styles.label}>Отчество:</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={secondName}
+                            autoCapitalize='none'
+                            placeholder={"Введите отчество"}
+                            onChangeText={setSecondName}
+                        />
+                    </View>
                     <View style={styles.blockInput}>
                         <Text style={styles.label}>Телефон:</Text>
                         <TextInput
@@ -122,7 +123,7 @@ export const ClientEditScreen = (props: any) => {
                     </View>
                 </View>
                 <View style={[styles.blockButton]}>
-                    <TouchableOpacity style={styles.button} onPress={client ? onEditPress :onAddPress}>
+                    <TouchableOpacity style={styles.select} onPress={client ? onEditPress : onAddPress}>
                         <Text style={styles.buttonText}>
                             {buttonText}
                         </Text>
@@ -130,7 +131,6 @@ export const ClientEditScreen = (props: any) => {
                 </View>
             </View>
         </TouchableWithoutFeedback>
-
     </KeyboardAvoidingView>
 
 }
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
         padding: 15,
         fontSize: 18
     },
-    button: {
+    select: {
         borderWidth: 1,
         borderRadius: 50,
         padding: 15,

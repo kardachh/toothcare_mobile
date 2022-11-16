@@ -4,13 +4,14 @@ import {User, Client, Service} from "../types";
 const mainSlice:Slice = createSlice({
     name:'mainSlice',
     initialState: {
-        auth: <boolean>true,
-        user: <User|null>{id:"admin"},
-        // auth: <boolean>false,
-        // user: <User|null>null,
+        // auth: <boolean>true,
+        // user: <User|null>{id:"admin"},
+        auth: <boolean>false,
+        user: <User|null>null,
         selectedDate: <any>new Date(),
         clients: <Client[]>[],
-        services: <Service[]>[]
+        services: <Service[]>[],
+        users: <User[]>[]
     },
     reducers: {
         setAuth(state, action){
@@ -27,6 +28,9 @@ const mainSlice:Slice = createSlice({
         },
         setServices(state,action){
             state.services = action.payload
+        },
+        setUsers(state,action){
+            state.users = action.payload
         }
     }
 });
@@ -38,5 +42,6 @@ export const {
     setUser,
     setSelectedDate,
     setClients,
-    setServices
+    setServices,
+    setUsers
 } = mainSlice.actions
