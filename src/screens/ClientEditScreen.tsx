@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     },
     blockButton: {
         alignItems: "center",
-        marginBottom: "20%"
+        marginBottom: 30
     },
     page: {
         flex: 1,

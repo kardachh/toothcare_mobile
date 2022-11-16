@@ -17,7 +17,7 @@ export const ServicesScreen = () => {
     const {getServices} = useAPI()
 
     useEffect(() => {
-        services !== [] && !servicesDB &&  getServices().then(r => setServices(r));
+        services && !servicesDB &&  getServices().then(r => setServices(r));
     }, [])
 
     useEffect(() => {
@@ -36,7 +36,7 @@ export const ServicesScreen = () => {
     }
 
     const renderServiceItem = useCallback(({item}: { item: Service }) => {
-        return <RoundedBlock>
+        return <RoundedBlock onPress={()=>{}}>
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                 <Text style={{fontSize: 18}}>
                     {item.name}
