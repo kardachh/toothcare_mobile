@@ -18,19 +18,19 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {addWeeks, format} from "date-fns";
 import {AutocompleteDropdown} from "react-native-autocomplete-dropdown";
 import {Client, Order, Service, User} from "../types";
+import {setOrderNeedUpdate} from "../redux/store";
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
 ]);
 
 export const OrderEditScreen = (props: any) => {
+    const [order,setOrder] = useState<Order|null>(null)
     const timeController = useRef<any>(null)
     const serviceController = useRef<any>(null)
     const clientController = useRef<any>(null)
     const userController = useRef<any>(null)
 
-
-    const order: Order = props.route.params.order
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [id, setId] = useState<string | null>(null)
     const [datePicked, setDatePicked] = useState<string>(format(new Date(), "dd.MM.yyyy"));
@@ -76,7 +76,7 @@ export const OrderEditScreen = (props: any) => {
                 date: datePicked,
                 time: selectedTime
             }).then(() => {
-                props.route.params.onPress()
+                dispatch(setOrderNeedUpdate(true))
                 props.navigation.goBack()
             })
     }
@@ -87,16 +87,22 @@ export const OrderEditScreen = (props: any) => {
         } else {
             if (selectedClient && selectedService && selectedUser && id) {
                 updateOrder({client: selectedClient, date: datePicked, service: selectedService, time: selectedTime, user: selectedUser, id:id}).then(() => {
-                    props.route.params.onPress()
+                    dispatch(setOrderNeedUpdate(true))
                     props.navigation.goBack()
                 }).catch(e=>console.error(e))
             }
         }
     }
 
+    useEffect(()=>{
+        if (props.route.params && props.route.params.order){
+            setOrder(props.route.params.order)
+        }
+    },[props.route.params])
+
     useEffect(() => {
-        console.log("orderInfo", order)
         if (order && timeController && timeController.current) {
+            console.log("orderInfo", order)
             props.navigation.setOptions({headerTitle: "Изменение записи"})
             setButtonText('Сохранить')
             // normal

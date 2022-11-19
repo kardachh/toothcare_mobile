@@ -7,7 +7,7 @@ import {ClientsNames, MainNames} from "./screens";
 import {ServicesScreen} from "../screens/ServicesScreen";
 import {CalendarScreen} from "../screens/CalendarScreen";
 import {ClientEditScreen} from "../screens/ClientEditScreen";
-import {OrderEditScreen} from "../screens/EditOrderScreen";
+import {OrderEditScreen} from "../screens/OrderEditScreen";
 import {EmploymentScheduleScreen} from "../screens/EmploymentScheduleScreen";
 
 const Stack = createNativeStackNavigator();

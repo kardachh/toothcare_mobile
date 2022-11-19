@@ -1,15 +1,14 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useAPI} from "../api";
-import CalendarIcon from "../assets/caledar";
-import {Client, Order} from "../types";
+import {Order} from "../types";
 import {RoundedBlock} from "../components/RoundedBlock";
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
-import {ClientsNames, MainNames} from "../navigations/screens";
+import {MainNames} from "../navigations/screens";
 import {addDays, format, subDays} from "date-fns";
 import {ru} from "date-fns/locale";
 import Loader from "../components/Loader";
-import {setAuth, setSelectedDate, setUser} from "../redux/store";
+import {setAuth, setOrderNeedUpdate, setSelectedDate, setUser} from "../redux/store";
 import {GlobalStyles} from "../GlobalStyles";
 import LogoutIcon from "../assets/logout";
 import ArrowIcon from "../assets/arrow";
@@ -22,11 +21,12 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
     const {getOrder, getOrdersForDay, deleteDocFromDb} = useAPI();
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false)
     const { showActionSheetWithOptions } = useActionSheet();
-    const {selectedDate, user} = useAppSelector(state => state.slice)
+    const {selectedDate, user, orderNeedUpdate} = useAppSelector(state => state.slice)
     const [orders, setOrders] = useState<any>(null)
     const dispatch = useAppDispatch();
 
-    const getData = () => {
+    const getData = useCallback(()=>{
+        console.log("getData",format(selectedDate,"dd.MM.yyyy"))
         setIsDataLoaded(false)
         getOrdersForDay(selectedDate).then(async orders_ids => {
             const queries: any = []
@@ -36,15 +36,18 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
             Promise.all(queries).then(value => setOrders(value.filter((order: any) => user.id === order.user).sort(({time: a}: any, {time: b}: any) => getNumber({t: a}) - getNumber({t: b})))).catch(e => {
                 console.log(e)
             })
+            dispatch(setOrderNeedUpdate(false))
         });
-    }
+    },[selectedDate])
 
     useEffect(() => {
-        getData()
-    }, [selectedDate, user])
+        console.log("orderNeedUpdate",orderNeedUpdate)
+        if (orderNeedUpdate) {
+            getData()
+        }
+    }, [selectedDate, user, orderNeedUpdate])
 
     useEffect(() => {
-        // console.error(orders)
         orders ? setIsDataLoaded(true) : setIsDataLoaded(false)
     }, [orders])
 
@@ -61,7 +64,7 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
             ),
             headerRight: () => (
                 <TouchableOpacity onPress={() => {
-                    navigation.push(MainNames.OrderEdit, {onPress:getData})
+                    navigation.push(MainNames.OrderEdit)
                 }}>
                     <PlusIcon/>
                 </TouchableOpacity>
@@ -81,11 +84,11 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
         }, async (selectedIndex) => {
             switch (selectedIndex) {
                 case 1:
-                    navigation.push(MainNames.OrderEdit, {order: order, onPress: getData})
+                    navigation.push(MainNames.OrderEdit, {order: order})
                     break;
 
                 case destructiveButtonIndex:
-                    deleteDocFromDb("orders", order.id!).then(()=>getData())
+                    deleteDocFromDb("orders", order.id!).then(()=>dispatch(setOrderNeedUpdate(true)))
                     break;
 
                 case cancelButtonIndex:
@@ -130,6 +133,7 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                     style={styles.datePickerArrow}
                     onPress={() => {
                         dispatch(setSelectedDate(subDays(selectedDate, 1)))
+                        dispatch(setOrderNeedUpdate(true))
                     }}
                 >
                     <ArrowIcon/>
@@ -146,6 +150,7 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                     style={styles.datePickerArrow}
                     onPress={() => {
                         dispatch(setSelectedDate(addDays(selectedDate, 1)))
+                        dispatch(setOrderNeedUpdate(true))
                     }}
                 >
                     <ArrowIcon style={{transform: [{rotate: "180deg"}]}}/>

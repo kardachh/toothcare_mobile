@@ -1,17 +1,19 @@
 import {createSlice, Slice} from "@reduxjs/toolkit";
 import {User, Client, Service} from "../types";
+import {format} from "date-fns";
 
 const mainSlice:Slice = createSlice({
     name:'mainSlice',
     initialState: {
-        // auth: <boolean>true,
-        // user: <User|null>{id:"admin"},
-        auth: <boolean>false,
-        user: <User|null>null,
+        auth: <boolean>true,
+        user: <User|null>{id:"admin"},
+        // auth: <boolean>false,
+        // user: <User|null>null,
         selectedDate: <any>new Date(),
         clients: <Client[]>[],
         services: <Service[]>[],
-        users: <User[]>[]
+        users: <User[]>[],
+        orderNeedUpdate: <boolean>true
     },
     reducers: {
         setAuth(state, action){
@@ -21,6 +23,7 @@ const mainSlice:Slice = createSlice({
             state.user = action.payload
         },
         setSelectedDate(state,action){
+            console.log("selectedDate changed to: ", format(action.payload,"dd.MM.yyyy"))
             state.selectedDate = new Date(action.payload)
         },
         setClients(state,action){
@@ -31,7 +34,10 @@ const mainSlice:Slice = createSlice({
         },
         setUsers(state,action){
             state.users = action.payload
-        }
+        },
+        setOrderNeedUpdate(state,action){
+            state.orderNeedUpdate = action.payload
+        },
     }
 });
 
@@ -43,5 +49,6 @@ export const {
     setSelectedDate,
     setClients,
     setServices,
-    setUsers
+    setUsers,
+    setOrderNeedUpdate
 } = mainSlice.actions
