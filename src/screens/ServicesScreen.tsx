@@ -7,6 +7,7 @@ import {useAPI} from "../api";
 import Loader from "../components/Loader";
 import {GlobalStyles} from "../GlobalStyles";
 import {useAppSelector} from "../redux/hooks";
+import {LinearGradient} from "expo-linear-gradient";
 
 export const ServicesScreen = () => {
     const servicesDB = useAppSelector(state => state.slice).services
@@ -17,7 +18,7 @@ export const ServicesScreen = () => {
     const {getServices} = useAPI()
 
     useEffect(() => {
-        services && !servicesDB &&  getServices().then(r => setServices(r));
+        services && !servicesDB && getServices().then(r => setServices(r));
     }, [])
 
     useEffect(() => {
@@ -36,7 +37,8 @@ export const ServicesScreen = () => {
     }
 
     const renderServiceItem = useCallback(({item}: { item: Service }) => {
-        return <RoundedBlock onPress={()=>{}}>
+        return <RoundedBlock onPress={() => {
+        }}>
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                 <Text style={{fontSize: 18}}>
                     {item.name}
@@ -67,14 +69,20 @@ export const ServicesScreen = () => {
                 <SearchIcon/>
             </TouchableOpacity>
         </View>
-        <FlatList data={filteredServices} renderItem={renderServiceItem}/>
+        <LinearGradient
+            // Background Linear Gradient
+            colors={['white', 'rgba(255,255,255,0.9)', 'rgba(255,255,255,0.5)']}
+            style={styles.gradient}
+        />
+        <FlatList style={{paddingTop: 20}} data={filteredServices} renderItem={renderServiceItem}/>
     </View>
 }
 
 const styles = StyleSheet.create({
     page: {flex: 1},
     search: {
-        marginVertical: 20,
+        marginBottom: 1,
+        marginTop: 20,
         borderWidth: 1,
         borderRadius: 50,
         borderColor: "gray",
@@ -89,5 +97,13 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         fontSize: 18
     },
-    item: {}
+    item: {},
+    gradient: {
+        height: 25,
+        position: "absolute",
+        top: 74,
+        left: 0,
+        width: "100%",
+        zIndex: 100
+    }
 })

@@ -10,6 +10,7 @@ import UserAddIcon from "../assets/user-add";
 import {ClientsNames} from "../navigations/screens";
 import {useActionSheet} from "@expo/react-native-action-sheet";
 import {useAppSelector} from "../redux/hooks";
+import {LinearGradient} from "expo-linear-gradient";
 
 export const ClientsScreen = ({navigation}: { navigation: any }) => {
     const clientsDB = useAppSelector(state => state.slice).clients
@@ -111,14 +112,20 @@ export const ClientsScreen = ({navigation}: { navigation: any }) => {
                 <SearchIcon/>
             </TouchableOpacity>
         </View>
-        <FlatList data={filteredClients} renderItem={renderClientItem}/>
+        <LinearGradient
+            // Background Linear Gradient
+            colors={['white','rgba(255,255,255,0.9)','rgba(255,255,255,0.5)']}
+            style={styles.gradient}
+        />
+        <FlatList style={{paddingTop: 20}} data={filteredClients} renderItem={renderClientItem}/>
     </View>
 }
 
 const styles = StyleSheet.create({
     page: {flex: 1},
     search: {
-        marginVertical: 20,
+        marginBottom: 1,
+        marginTop: 20,
         borderWidth: 1,
         borderRadius: 50,
         borderColor: "gray",
@@ -133,5 +140,13 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         fontSize: 18
     },
-    item: {}
+    item: {},
+    gradient: {
+        height: 25,
+        position: "absolute",
+        top: 74,
+        left: 0,
+        width: "100%",
+        zIndex: 100
+    }
 })
