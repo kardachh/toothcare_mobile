@@ -1,27 +1,38 @@
-import {FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {FlatList, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import React, {useCallback, useEffect, useState} from "react";
 import SearchIcon from "../assets/search";
 import {RoundedBlock} from "../components/RoundedBlock";
-import {Service} from "../types";
+import {Service, UserTypes} from "../types";
 import {useAPI} from "../api";
 import Loader from "../components/Loader";
 import {GlobalStyles} from "../GlobalStyles";
-import {useAppSelector} from "../redux/hooks";
+import {useAppDispatch, useAppSelector} from "../redux/hooks";
 import {LinearGradient} from "expo-linear-gradient";
+import PlusIcon from "../assets/plus";
+import {ServicesNames} from "../navigations/screens";
+import {useActionSheet} from "@expo/react-native-action-sheet";
 
-export const ServicesScreen = () => {
-    const servicesDB = useAppSelector(state => state.slice).services
+export const ServicesScreen = (props:any) => {
+    const {services:servicesDB, user, auth} = useAppSelector(state => state.slice)
+    const { showActionSheetWithOptions } = useActionSheet();
     const [searchText, setSearchText] = useState<string>('');
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false)
     const [services, setServices] = useState<Service[]>(servicesDB)
     const [filteredServices, setFilteredServices] = useState<Service[]>(services)
-    const {getServices} = useAPI()
+    const {getServices,deleteDocFromDb} = useAPI()
+    const dispatch = useAppDispatch();
+
+    const getData = () => {
+        setIsDataLoaded(false)
+        getServices().then(r => setServices(r))
+    }
 
     useEffect(() => {
-        services && !servicesDB && getServices().then(r => setServices(r));
-    }, [])
+        !servicesDB && getData();
+    }, [services])
 
     useEffect(() => {
+        setIsDataLoaded(false)
         setFilteredServices(services)
         setIsDataLoaded(true)
     }, [services])
@@ -36,14 +47,39 @@ export const ServicesScreen = () => {
         }))
     }
 
+    const onPressServiceItem = useCallback ((service:Service) => {
+        // console.log(service)
+        const options = ['Удалить', 'Изменить', 'Отмена'];
+        const destructiveButtonIndex = 0;
+        const cancelButtonIndex = 2;
+
+        showActionSheetWithOptions({
+            options,
+            cancelButtonIndex,
+            destructiveButtonIndex
+        }, async (selectedIndex) => {
+            switch (selectedIndex) {
+                case 1:
+                    props.navigation.push(ServicesNames.ServicesEdit, {service: service, onPress: getData})
+                    break;
+
+                case destructiveButtonIndex:
+                    deleteDocFromDb("services", service.id!).then(()=>getData())
+                    break;
+
+                case cancelButtonIndex:
+                // Canceled
+            }
+        });
+    },[user, auth])
+
     const renderServiceItem = useCallback(({item}: { item: Service }) => {
-        return <RoundedBlock onPress={() => {
-        }}>
+        return <RoundedBlock onPress={() => user && user.type === UserTypes.admin && onPressServiceItem(item)}>
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                <Text style={{fontSize: 18}}>
+                <Text numberOfLines={1} style={{fontSize: 18,flex:2}}>
                     {item.name}
                 </Text>
-                <Text style={{fontSize: 18}}>{item.price} руб.</Text>
+                <Text style={{fontSize: 18, flex:1, textAlign:"right"}}>{item.price} руб.</Text>
             </View>
             <View style={{marginTop: 10}}>
                 <Text>
@@ -51,8 +87,22 @@ export const ServicesScreen = () => {
                 </Text>
             </View>
         </RoundedBlock>
-    }, []);
+    }, [user, auth]);
 
+    React.useLayoutEffect(() => {
+        user && user.type === UserTypes.admin && props.navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={() => {
+                    props.navigation.push(ServicesNames.ServicesEdit, {onPress: getData})
+                }}>
+                    <PlusIcon/>
+                </TouchableOpacity>
+            ),
+        });
+        (!user || user && user.type !== UserTypes.admin) && props.navigation.setOptions({
+            headerRight: () => (<></>),
+        });
+    }, [props.navigation, user]);
 
     return <View style={GlobalStyles.page}>
         <Loader isDataLoaded={isDataLoaded}/>
@@ -101,7 +151,7 @@ const styles = StyleSheet.create({
     gradient: {
         height: 25,
         position: "absolute",
-        top: 74,
+        top: Platform.OS === "ios" ? 74 : 80,
         left: 0,
         width: "100%",
         zIndex: 100

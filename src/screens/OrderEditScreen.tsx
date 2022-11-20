@@ -17,7 +17,7 @@ import {GlobalStyles} from "../GlobalStyles";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {addWeeks, format} from "date-fns";
 import {AutocompleteDropdown} from "react-native-autocomplete-dropdown";
-import {Client, Order, Service, User} from "../types";
+import {Client, Order, Service, User, UserTypes} from "../types";
 import {setOrderNeedUpdate} from "../redux/store";
 
 LogBox.ignoreLogs([
@@ -25,7 +25,7 @@ LogBox.ignoreLogs([
 ]);
 
 export const OrderEditScreen = (props: any) => {
-    const [order,setOrder] = useState<Order|null>(null)
+    const [order, setOrder] = useState<Order | null>(null)
     const timeController = useRef<any>(null)
     const serviceController = useRef<any>(null)
     const clientController = useRef<any>(null)
@@ -86,23 +86,30 @@ export const OrderEditScreen = (props: any) => {
             createButtonAlert({title: "Не все поля заполнены", description: ""})
         } else {
             if (selectedClient && selectedService && selectedUser && id) {
-                updateOrder({client: selectedClient, date: datePicked, service: selectedService, time: selectedTime, user: selectedUser, id:id}).then(() => {
+                updateOrder({
+                    client: selectedClient,
+                    date: datePicked,
+                    service: selectedService,
+                    time: selectedTime,
+                    user: selectedUser,
+                    id: id
+                }).then(() => {
                     dispatch(setOrderNeedUpdate(true))
                     props.navigation.goBack()
-                }).catch(e=>console.error(e))
+                }).catch(e => console.error(e))
             }
         }
     }
 
-    useEffect(()=>{
-        if (props.route.params && props.route.params.order){
+    useEffect(() => {
+        if (props.route.params && props.route.params.order) {
             setOrder(props.route.params.order)
         }
-    },[props.route.params])
+    }, [props.route.params])
 
     useEffect(() => {
         if (order && timeController && timeController.current) {
-            console.log("orderInfo", order)
+            // console.log("orderInfo", order)
             props.navigation.setOptions({headerTitle: "Изменение записи"})
             setButtonText('Сохранить')
             // normal
@@ -110,17 +117,23 @@ export const OrderEditScreen = (props: any) => {
             setId(order.id!)
             // trouble
             setSelectedTime(order.time)
-            timeController.current.setItem({id:order.time,title:order.time})
+            timeController.current.setItem({id: order.time, title: order.time})
 
             setSelectedService(order.service)
-            serviceController.current.setItem({id:order.service.id,title:order.service.name})
+            serviceController.current.setItem({id: order.service.id, title: order.service.name})
 
             setSelectedClient(order.client)
-            clientController.current.setItem({id:order.client.id,title:`${order.client.LastName} ${order.client.FirstName} ${order.client.SecondName}`})
+            clientController.current.setItem({
+                id: order.client.id,
+                title: `${order.client.LastName} ${order.client.FirstName} ${order.client.SecondName}`
+            })
 
             setSelectedUser(order.user)
-            const user = users.find((user:User)=> user.id === order.user.toString())
-            userController.current.setItem({id:order.user,title:`${user.LastName} ${user.FirstName} ${user.SecondName}`})
+            const user = users.find((user: User) => user.id === order.user.toString())
+            userController.current.setItem({
+                id: order.user,
+                title: `${user.LastName} ${user.FirstName} ${user.SecondName}`
+            })
         }
     }, [order])
 
@@ -145,7 +158,7 @@ export const OrderEditScreen = (props: any) => {
                             onCancel={hideDatePicker}
                         />
                     </View>
-                    <View style={[styles.blockInput, Platform.select({ios: {zIndex: 9}})]}>
+                    <View style={[styles.blockInput, {zIndex: 9}]}>
                         <Text style={styles.label}>Время:</Text>
                         <AutocompleteDropdown
                             controller={controller => {
@@ -183,7 +196,7 @@ export const OrderEditScreen = (props: any) => {
                             ]}
                         />
                     </View>
-                    <View style={[styles.blockInput, Platform.select({ios: {zIndex: 8}})]}>
+                    <View style={[styles.blockInput, {zIndex: 8}]}>
                         <Text style={styles.label}>Услуга:</Text>
                         <AutocompleteDropdown
                             controller={controller => {
@@ -208,7 +221,7 @@ export const OrderEditScreen = (props: any) => {
                             dataSet={services.map((service: Service) => ({id: service.id, title: service.name}))}
                         />
                     </View>
-                    <View style={[styles.blockInput, Platform.select({ios: {zIndex: 7}})]}>
+                    <View style={[styles.blockInput, {zIndex: 7}]}>
                         <Text style={styles.label}>Клиент:</Text>
                         <AutocompleteDropdown
                             controller={controller => {
@@ -236,7 +249,7 @@ export const OrderEditScreen = (props: any) => {
                             }))}
                         />
                     </View>
-                    <View style={[styles.blockInput, Platform.select({ios: {zIndex: 6}})]}>
+                    <View style={[styles.blockInput, {zIndex: 6}]}>
                         <Text style={styles.label}>Исполнитель:</Text>
                         <AutocompleteDropdown
                             controller={controller => {
@@ -259,10 +272,12 @@ export const OrderEditScreen = (props: any) => {
                             closeOnBlur={false}
                             closeOnSubmit={false}
                             onSelectItem={(item) => item && setSelectedUser(users.find((user: User) => user.id === item.id))}
-                            dataSet={users.map((user: User) => ({
-                                id: user.id,
-                                title: `${user.LastName} ${user.FirstName} ${user.SecondName}`
-                            }))}
+                            dataSet={users.filter((user: User) => user.type === UserTypes.employee).map((user: User) => {
+                                return ({
+                                    id: user.id,
+                                    title: `${user.LastName} ${user.FirstName} ${user.SecondName}`
+                                });
+                            })}
                         />
                     </View>
                     <View style={[styles.block, styles.blockButton]}>

@@ -1,12 +1,11 @@
 import {createSlice, Slice} from "@reduxjs/toolkit";
 import {User, Client, Service} from "../types";
-import {format} from "date-fns";
 
 const mainSlice:Slice = createSlice({
     name:'mainSlice',
     initialState: {
         auth: <boolean>true,
-        user: <User|null>{id:"admin"},
+        user: <User|null>{id:"admin", type: "admin"},
         // auth: <boolean>false,
         // user: <User|null>null,
         selectedDate: <any>new Date(),
@@ -23,7 +22,6 @@ const mainSlice:Slice = createSlice({
             state.user = action.payload
         },
         setSelectedDate(state,action){
-            console.log("selectedDate changed to: ", format(action.payload,"dd.MM.yyyy"))
             state.selectedDate = new Date(action.payload)
         },
         setClients(state,action){

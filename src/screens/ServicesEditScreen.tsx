@@ -15,21 +15,21 @@ import {
 import {useAppDispatch} from "../redux/hooks";
 import {useAPI} from "../api";
 import {GlobalStyles} from "../GlobalStyles";
-import {Client} from "../types";
+import {Client, Order, Service} from "../types";
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
 ]);
 
-export const ClientEditScreen = (props: any) => {
-    const client: Client = props.route.params.client
-    const [id, setId] = useState<string | null>(null)
-    const [firstName, setFirstName] = useState<string>('')
-    const [lastName, setLastName] = useState<string>('')
-    const [secondName, setSecondName] = useState<string>('')
-    const [phone, setPhone] = useState<string>('')
+export const ServicesEditScreen = (props: any) => {
+    const [service, setService] = useState<Service | null>(null)
     const [buttonText, setButtonText] = useState<string>('Добавить')
-    const {addClient, updateDocFromDb} = useAPI()
+    const [id, setId] = useState<string | null>(null)
+    const [name, setName] = useState<string>('')
+    const [description, setDescription] = useState<string>('')
+    const [price, setPrice] = useState<string>('')
+
+    const {addService, updateDocFromDb} = useAPI()
     const dispatch = useAppDispatch()
     const createButtonAlert = ({
                                    title,
@@ -41,40 +41,45 @@ export const ClientEditScreen = (props: any) => {
         Alert.alert(title, description, [{text: "OK"}])
 
     useEffect(() => {
-        if (client) {
-            props.navigation.setOptions({headerTitle: "Изменение клиента"})
+        if (service) {
+            props.navigation.setOptions({headerTitle: "Изменение услуги"})
             setButtonText('Сохранить')
-            setId(client.id!)
-            setFirstName(client.FirstName)
-            setLastName(client.LastName)
-            setSecondName(client.SecondName)
-            setPhone(client.phone)
+            setId(service.id!)
+            setName(service.name)
+            setDescription(service.description)
+            setPrice(service.price.toString())
         }
-    }, [client])
+    }, [service])
+
+    useEffect(() => {
+        if (props.route.params && props.route.params.service) {
+            setService(props.route.params.service)
+        }
+    }, [props.route.params])
 
     const onAddPress = async () => {
-        if (!firstName.trim() && !lastName.trim() && !secondName.trim() && !phone.trim()) {
+        if (!name.trim() && !description.trim() && !price.trim()) {
             createButtonAlert({title: "Не все поля заполнены", description: ""})
         } else
-            addClient({FirstName: firstName, LastName: lastName, SecondName: secondName, phone: phone}).then(() => {
+            addService({description: description, name: name, price: Number(price)}).then(() => {
                 props.route.params.onPress()
                 props.navigation.goBack()
             })
     }
 
     const onEditPress = async () => {
-        if (!firstName.trim() && !lastName.trim() && !secondName.trim() && !phone.trim()) {
+        if (!name.trim() && !description.trim() && !price.trim()) {
             createButtonAlert({title: "Не все поля заполнены", description: ""})
         } else {
-            updateDocFromDb("clients", client.id!, {
-                FirstName: firstName,
-                LastName: lastName,
-                SecondName: secondName,
-                phone: phone
-            }).then(() => {
-                props.route.params.onPress()
-                props.navigation.goBack()
-            })
+            if (service && service.id)
+                updateDocFromDb("services", service.id, {
+                    description: description,
+                    name: name,
+                    price: Number(price)
+                }).then(() => {
+                    props.route.params.onPress()
+                    props.navigation.goBack()
+                })
         }
     }
 
@@ -83,48 +88,39 @@ export const ClientEditScreen = (props: any) => {
             <View style={GlobalStyles.page}>
                 <View style={styles.block}>
                     <View style={styles.blockInput}>
-                        <Text style={styles.label}>Имя:</Text>
+                        <Text style={styles.label}>Наименование:</Text>
                         <TextInput
-
                             style={styles.input}
-                            value={firstName}
+                            value={name}
                             autoCapitalize='none'
-                            placeholder={"Введите имя"}
-                            onChangeText={setFirstName}
+                            placeholder={"Введите наименование услуги"}
+                            onChangeText={setName}
                         />
                     </View><View style={styles.blockInput}>
-                    <Text style={styles.label}>Фамилия:</Text>
+                    <Text style={styles.label}>Описание:</Text>
                     <TextInput
+                        multiline={true}
                         style={styles.input}
-                        value={lastName}
+                        value={description}
                         autoCapitalize='none'
-                        placeholder={"Введите фамилию"}
-                        onChangeText={setLastName}
+                        placeholder={"Опишите услугу"}
+                        onChangeText={setDescription}
                     />
                 </View>
                     <View style={styles.blockInput}>
-                        <Text style={styles.label}>Отчество:</Text>
+                        <Text style={styles.label}>Цена:</Text>
                         <TextInput
+                            keyboardType={"numeric"}
                             style={styles.input}
-                            value={secondName}
+                            value={price}
                             autoCapitalize='none'
-                            placeholder={"Введите отчество"}
-                            onChangeText={setSecondName}
-                        />
-                    </View>
-                    <View style={styles.blockInput}>
-                        <Text style={styles.label}>Телефон:</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={phone}
-                            autoCapitalize='none'
-                            placeholder={"Введите телефон"}
-                            onChangeText={setPhone}
+                            placeholder={"Введите цену в руб."}
+                            onChangeText={setPrice}
                         />
                     </View>
                 </View>
                 <View style={[styles.blockButton]}>
-                    <TouchableOpacity style={styles.select} onPress={client ? onEditPress : onAddPress}>
+                    <TouchableOpacity style={styles.select} onPress={service ? onEditPress : onAddPress}>
                         <Text style={styles.buttonText}>
                             {buttonText}
                         </Text>

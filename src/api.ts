@@ -19,7 +19,7 @@ export const useAPI = () => {
         );
         return await getDocs(q).then((docs) => {
             if (docs.size !== 0) {
-                dispatch(setUser({id: docs.docs[0].id}));
+                dispatch(setUser({id: docs.docs[0].id, type: docs.docs[0].data().type}));
                 return true;
             } else return false;
         });
@@ -57,7 +57,8 @@ export const useAPI = () => {
                 FirstName: doc.data().FirstName,
                 LastName: doc.data().LastName,
                 SecondName: doc.data().SecondName,
-                id: doc.id
+                id: doc.id,
+                type: doc.data().type,
             })
         })
         return users
@@ -116,6 +117,11 @@ export const useAPI = () => {
         }
     };
 
+    const addService: (service: Service) => Promise<any> = async (service) => {
+        await addDoc(collection(dbFirestore, "services"), service);
+        // console.log('Added document with ID: ', res.id);
+    }
+
     // TODO: add safe delete (delete referenced docs from another collection)
     const deleteDocFromDb : (collectionName:string, idDoc:string) => Promise<void> = async (collectionName,idDoc) => {
         await deleteDoc(doc(dbFirestore,collectionName,idDoc))
@@ -169,8 +175,9 @@ export const useAPI = () => {
         getServices,
         getOrder,
         getOrdersForDay,
-        addClient,
         getUsers,
+        addClient,
+        addService,
         addOrder,
         updateOrder,
         updateDocFromDb,

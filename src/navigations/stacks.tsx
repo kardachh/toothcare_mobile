@@ -3,12 +3,13 @@ import {MainScreen} from "../screens/MainScreen";
 import {AuthScreen} from "../screens/AuthScreen";
 import {ClientsScreen} from "../screens/ClientsScreen";
 import {useAppSelector} from "../redux/hooks";
-import {ClientsNames, MainNames} from "./screens";
+import {ClientsNames, MainNames, ServicesNames} from "./screens";
 import {ServicesScreen} from "../screens/ServicesScreen";
 import {CalendarScreen} from "../screens/CalendarScreen";
 import {ClientEditScreen} from "../screens/ClientEditScreen";
 import {OrderEditScreen} from "../screens/OrderEditScreen";
 import {EmploymentScheduleScreen} from "../screens/EmploymentScheduleScreen";
+import {ServicesEditScreen} from "../screens/ServicesEditScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ const getNavigatorOptions = (title: string, props?: any) =>
         headerTitle: title,
         headerBackTitle: ' ',
         headerTitleStyle: {fontSize: 20},
+        headerTitleAlign: 'center',
         headerTintColor: 'black',
         headerShown: true,
         ...props,
@@ -55,17 +57,24 @@ export const ClientsStackNavigator = () => {
             </Stack.Navigator>
             : <Stack.Navigator>
                 <Stack.Screen name={ClientsNames.Auth} component={AuthScreen} options={getNavigatorOptions("Авторизация")}
-                              initialParams={{navigationKey: "ClientsScreen"}}/>
+                              initialParams={{navigationKey: ClientsNames.Clients}}/>
             </Stack.Navigator>
     );
 }
 
 export const ServicesStackNavigator = () => {
+    const {auth} = useAppSelector(state => state.slice)
+
     return (
-        <Stack.Navigator initialRouteName={"ClientsScreen"}>
-            <Stack.Screen name={ClientsNames.Auth} component={ServicesScreen} options={getNavigatorOptions("Услуги")}
-                          initialParams={{navigationKey: "ClientsScreen"}}/>
+        auth ?
+        <Stack.Navigator initialRouteName={ServicesNames.Services}>
+            <Stack.Screen name={ServicesNames.Services} component={ServicesScreen} options={getNavigatorOptions("Услуги")}/>
+            <Stack.Screen name={ServicesNames.ServicesEdit} component={ServicesEditScreen} options={getNavigatorOptions("Новая услуга")}/>
         </Stack.Navigator>
+            :
+            <Stack.Navigator>
+                <Stack.Screen name={ServicesNames.Services} component={ServicesScreen} options={getNavigatorOptions("Услуги")}/>
+            </Stack.Navigator>
     );
 }
 

@@ -18,3 +18,8 @@ export enum ClientsNames {
     "ClientEdit" = "ClientEditScreen"
 }
 
+export enum ServicesNames {
+    "Services" = "ServicesScreen",
+    "ServicesEdit" = "ServicesEditScreen"
+}
+

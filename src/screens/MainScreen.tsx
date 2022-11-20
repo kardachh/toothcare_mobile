@@ -26,7 +26,6 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
     const dispatch = useAppDispatch();
 
     const getData = useCallback(()=>{
-        console.log("getData",format(selectedDate,"dd.MM.yyyy"))
         setIsDataLoaded(false)
         getOrdersForDay(selectedDate).then(async orders_ids => {
             const queries: any = []
@@ -41,10 +40,7 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
     },[selectedDate])
 
     useEffect(() => {
-        console.log("orderNeedUpdate",orderNeedUpdate)
-        if (orderNeedUpdate) {
-            getData()
-        }
+        orderNeedUpdate && getData()
     }, [selectedDate, user, orderNeedUpdate])
 
     useEffect(() => {
@@ -104,7 +100,7 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                     {`${item.time}`}
                 </Text>
                 <Text style={{fontSize: 18}}>
-                    {`${item.client.LastName} ${item.client.FirstName} ${item.client.SecondName}`}
+                    {`${item.client.LastName} ${item.client.FirstName.charAt(0)}. ${item.client.SecondName.charAt(0)}.`}
                 </Text>
             </View>
             <View style={{marginTop: 10, flexDirection: "row", justifyContent: "space-between"}}>

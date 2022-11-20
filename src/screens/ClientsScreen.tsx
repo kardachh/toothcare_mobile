@@ -1,4 +1,4 @@
-import {FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {FlatList, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import React, {useCallback, useEffect, useState} from "react";
 import {Client} from "../types";
 import SearchIcon from "../assets/search";
@@ -13,7 +13,7 @@ import {useAppSelector} from "../redux/hooks";
 import {LinearGradient} from "expo-linear-gradient";
 
 export const ClientsScreen = ({navigation}: { navigation: any }) => {
-    const clientsDB = useAppSelector(state => state.slice).clients
+    const {clients:clientsDB,user,auth} = useAppSelector(state => state.slice)
     const { showActionSheetWithOptions } = useActionSheet();
     const [searchText, setSearchText] = useState<string>('')
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false)
@@ -44,7 +44,7 @@ export const ClientsScreen = ({navigation}: { navigation: any }) => {
             return client.phone.includes(searchText) || client.LastName.includes(searchText) || client.FirstName.includes(searchText) || client.SecondName.includes(searchText)
         }))
 
-    const onPressClientItem = (client:Client) => {
+    const onPressClientItem = useCallback((client:Client) => {
         console.log(client)
         const options = ['Удалить', 'Изменить', 'Отмена'];
         const destructiveButtonIndex = 0;
@@ -68,7 +68,7 @@ export const ClientsScreen = ({navigation}: { navigation: any }) => {
                 // Canceled
             }
         });
-    }
+    },[auth,user])
 
     const renderClientItem = useCallback(({item}: { item: Client }) =>
         <RoundedBlock info={item} onPress={()=>onPressClientItem(item)}>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     gradient: {
         height: 25,
         position: "absolute",
-        top: 74,
+        top: Platform.OS === "ios" ? 74 : 80,
         left: 0,
         width: "100%",
         zIndex: 100
