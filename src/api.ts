@@ -143,6 +143,19 @@ export const useAPI = () => {
         });
     };
 
+    const getOrdersForClient = async (clientId:string) => {
+        const clientDocRef = doc(dbFirestore,"clients",clientId)
+        const q = query(
+            collection(dbFirestore, "orders"),
+            where("client", "==", clientDocRef),
+        );
+        return await getDocs(q).then((docs) => {
+            const orders: string[] = []
+            docs.docs.forEach(doc => orders.push(doc.id))
+            return orders;
+        });
+    };
+
     const addOrder: (order: Order) => Promise<any> = async (order) => {
         await addDoc(collection(dbFirestore, "orders"), {
             client: doc(dbFirestore, "clients", `${order.client.id}`),
@@ -175,6 +188,7 @@ export const useAPI = () => {
         getServices,
         getOrder,
         getOrdersForDay,
+        getOrdersForClient,
         getUsers,
         addClient,
         addService,

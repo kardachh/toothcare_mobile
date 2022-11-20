@@ -15,7 +15,8 @@ export enum MainNames {
 export enum ClientsNames {
     "Clients" = "ClientsScreen",
     "Auth" = "AuthScreen",
-    "ClientEdit" = "ClientEditScreen"
+    "ClientEdit" = "ClientEditScreen",
+    "ClientOrders" = "ClientOrdersScreen"
 }
 
 export enum ServicesNames {

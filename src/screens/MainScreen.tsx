@@ -163,7 +163,7 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                 <FlatList data={orders} renderItem={renderOrderItem}/>
             </View>
             :
-            isDataLoaded && <View style={styles.emptyPage}><Text>Нет записей</Text></View>}
+            isDataLoaded && <View style={styles.emptyPage}><Text style={{fontSize:20}}>Нет записей</Text></View>}
     </View>);
 };
 

@@ -10,6 +10,7 @@ import {ClientEditScreen} from "../screens/ClientEditScreen";
 import {OrderEditScreen} from "../screens/OrderEditScreen";
 import {EmploymentScheduleScreen} from "../screens/EmploymentScheduleScreen";
 import {ServicesEditScreen} from "../screens/ServicesEditScreen";
+import {ClientOrdersScreen} from "../screens/ClientOrdersScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -54,6 +55,8 @@ export const ClientsStackNavigator = () => {
                               options={getNavigatorOptions("Клиенты")}/>
                 <Stack.Screen name={ClientsNames.ClientEdit} component={ClientEditScreen}
                               options={getNavigatorOptions("Новый клиент")}/>
+                <Stack.Screen name={ClientsNames.ClientOrders} component={ClientOrdersScreen}
+                              options={getNavigatorOptions("История клиента")}/>
             </Stack.Navigator>
             : <Stack.Navigator>
                 <Stack.Screen name={ClientsNames.Auth} component={AuthScreen} options={getNavigatorOptions("Авторизация")}
