@@ -54,6 +54,7 @@ export const OrdersScreen = ({navigation}: { navigation: any }) => {
                 <TouchableOpacity onPress={() => {
                     dispatch(setAuth(false))
                     dispatch(setUser(null))
+                    dispatch(setOrderNeedUpdate(true))
                     console.log('logout');
                 }}>
                     <LogoutIcon/>
@@ -159,7 +160,7 @@ export const OrdersScreen = ({navigation}: { navigation: any }) => {
             {/*</TouchableOpacity>*/}
         </View>
         <View style={{flex: 1}}>
-            <Loader isDataLoaded={isDataLoaded && !orderNeedUpdate}/>
+            <Loader isDataLoaded={isDataLoaded}/>
             {orders && orders.length !== 0 ?
                 <View >
                     <LinearGradient

@@ -4,11 +4,8 @@ import {User, Client, Service} from "../types";
 const mainSlice: Slice = createSlice({
     name: 'mainSlice',
     initialState: {
-        // auth: <boolean>false,
-        // user: <User|null>null,
-        auth: <boolean>true,
-        // user: <User|null>{id: "trqAAkfc7b9stJlHxyKI", type: "employee"},
-        user: <User|null>{id: "admin", type: "admin"},
+        auth: <boolean>false,
+        user: <User|null>null,
         selectedDate: <any>new Date(),
         clients: <Client[]>[],
         services: <Service[]>[],
