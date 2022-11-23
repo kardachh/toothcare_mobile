@@ -10,19 +10,19 @@ import {useAppDispatch, useAppSelector} from "../redux/hooks";
 import {LinearGradient} from "expo-linear-gradient";
 import PlusIcon from "../assets/plus";
 import {
-    setDelServices as setDelServicesRedux,
+    setDelServices,
     setFilteredServices,
-    setServices as setServicesRedux
+    setServices
 } from "../redux/store";
 import {ServicesNames} from "../navigations/screens";
 import {useActionSheet} from "@expo/react-native-action-sheet";
 
 export const ServicesScreen = (props:any) => {
-    const {services:servicesDB, user, auth, delServices:delServicesDB, filteredServices} = useAppSelector(state => state.slice)
+    const {services, user, auth, delServices, filteredServices} = useAppSelector(state => state.slice)
     const { showActionSheetWithOptions } = useActionSheet();
     const [searchText, setSearchText] = useState<string>('');
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false)
-    const [filteredTextServices, setFilteredTextServices] = useState<Service[]>(servicesDB)
+    const [filteredTextServices, setFilteredTextServices] = useState<Service[]>(filteredServices)
 
     const {getServices, addDelService, getDelServices} = useAPI()
     const dispatch = useAppDispatch();
@@ -30,33 +30,33 @@ export const ServicesScreen = (props:any) => {
     const getData = () => {
         setIsDataLoaded(false)
         getDelServices().then(r=>{
-            dispatch(setDelServicesRedux(r))
+            dispatch(setDelServices(r))
         })
         getServices().then(r => {
-            dispatch(setServicesRedux(r))
+            dispatch(setServices(r))
         })
     }
 
     useEffect(()=>{
-        if (servicesDB && delServicesDB){
+        if (services && delServices){
             dispatch(setFilteredServices(
-                servicesDB.reduce((acc:Service[],item:Service)=>{
-                    if (!delServicesDB.includes(item.id!)) acc.push(item)
+                services.reduce((acc:Service[],item:Service)=>{
+                    if (!delServices.includes(item.id!)) acc.push(item)
                     return acc;
                 },[])
             ))
         }
-    },[servicesDB, delServicesDB])
+    },[services, delServices])
 
     useEffect(() => {
-        !servicesDB && getData();
-    }, [servicesDB])
+        !services && getData();
+    }, [services])
 
     useEffect(() => {
         setIsDataLoaded(false)
         setFilteredTextServices(filteredServices)
         setIsDataLoaded(true)
-    }, [servicesDB])
+    }, [filteredServices])
 
     useEffect(() => {
         onSearchPress()
@@ -140,12 +140,14 @@ export const ServicesScreen = (props:any) => {
                 <SearchIcon/>
             </TouchableOpacity>
         </View>
-        <LinearGradient
-            // Background Linear Gradient
-            colors={['white', 'rgba(255,255,255,0.9)', 'rgba(255,255,255,0.5)']}
-            style={styles.gradient}
-        />
-        <FlatList style={{paddingTop: 20}} data={filteredTextServices} renderItem={renderServiceItem}/>
+        <View style={{flex:1}}>
+            <LinearGradient
+                // Background Linear Gradient
+                colors={['white', 'rgba(255,255,255,0.9)', 'rgba(255,255,255,0.5)']}
+                style={styles.gradient}
+            />
+            <FlatList style={{marginTop: 15}} data={filteredTextServices} renderItem={renderServiceItem}/>
+        </View>
     </View>
 }
 
@@ -172,7 +174,7 @@ const styles = StyleSheet.create({
     gradient: {
         height: 25,
         position: "absolute",
-        top: Platform.OS === "ios" ? 74 : 80,
+        // top: Platform.OS === "ios" ? 74 : 80,
         left: 0,
         width: "100%",
         zIndex: 100

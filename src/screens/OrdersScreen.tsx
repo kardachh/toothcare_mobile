@@ -41,7 +41,6 @@ export const OrdersScreen = ({navigation}: { navigation: any }) => {
     },[selectedDate])
 
     useEffect(() => {
-        console.log(selectedDate)
         orderNeedUpdate && getData()
     }, [selectedDate, user, orderNeedUpdate])
 

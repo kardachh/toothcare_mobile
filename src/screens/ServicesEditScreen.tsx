@@ -99,8 +99,9 @@ export const ServicesEditScreen = (props: any) => {
                     </View><View style={styles.blockInput}>
                     <Text style={styles.label}>Описание:</Text>
                     <TextInput
+                        numberOfLines={5}
                         multiline={true}
-                        style={styles.input}
+                        style={[styles.input,{maxHeight:150, minHeight:55,padding: "7%", borderRadius: 30}]}
                         value={description}
                         autoCapitalize='none'
                         placeholder={"Опишите услугу"}

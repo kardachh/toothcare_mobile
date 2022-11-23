@@ -116,12 +116,14 @@ export const ClientsScreen = ({navigation}: { navigation: any }) => {
                 <SearchIcon/>
             </TouchableOpacity>
         </View>
-        <LinearGradient
-            // Background Linear Gradient
-            colors={['white','rgba(255,255,255,0.9)','rgba(255,255,255,0.5)']}
-            style={styles.gradient}
-        />
-        <FlatList style={{paddingTop: 20}} data={filteredClients} renderItem={renderClientItem}/>
+        <View style={{flex:1}}>
+            <LinearGradient
+                // Background Linear Gradient
+                colors={['white','rgba(255,255,255,0.9)','rgba(255,255,255,0.5)']}
+                style={styles.gradient}
+            />
+            <FlatList style={{marginTop: 15}} data={filteredClients} renderItem={renderClientItem}/>
+        </View>
     </View>
 }
 
@@ -148,7 +150,7 @@ const styles = StyleSheet.create({
     gradient: {
         height: 25,
         position: "absolute",
-        top: Platform.OS === "ios" ? 74 : 80,
+        // top: Platform.OS === "ios" ? 74 : 80,
         left: 0,
         width: "100%",
         zIndex: 100
