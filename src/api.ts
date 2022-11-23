@@ -49,6 +49,17 @@ export const useAPI = () => {
         return services
     };
 
+    const getDelServices: () => Promise<string[]> = async () => {
+        const querySnapshot = await getDocs(collection(dbFirestore, "delServices"));
+        const delServices: string[] = [];
+        querySnapshot.forEach((doc) => {
+            delServices.push(
+                doc.data().delServiceId
+            )
+        })
+        return delServices
+    };
+
     const getUsers: () => Promise<User[]> = async () => {
         const querySnapshot = await getDocs(collection(dbFirestore, "users"));
         const users: User[] = [];
@@ -95,6 +106,12 @@ export const useAPI = () => {
         // console.log('Added document with ID: ', res.id);
     }
 
+    const addDelService: (serviceId : string) => Promise<void> = async (serviceId) => {
+        // Add a new document in collection "cities"
+        await addDoc(collection(dbFirestore, "delServices"), {delServiceId: serviceId});
+        // console.log('Added document with ID: ', res.id);
+    }
+
     const getOrder = async (id: string) => {
         const snap = await getDoc(doc(dbFirestore, "orders", id));
         if (snap.exists()) {
@@ -122,7 +139,10 @@ export const useAPI = () => {
         // console.log('Added document with ID: ', res.id);
     }
 
-    // TODO: add safe delete (delete referenced docs from another collection)
+    const addDocToDb : (collectionName:string, newInfo:any) => Promise<void> = async (collectionName, newInfo) => {
+        await addDoc(collection(dbFirestore,collectionName), newInfo)
+    }
+
     const deleteDocFromDb : (collectionName:string, idDoc:string) => Promise<void> = async (collectionName,idDoc) => {
         await deleteDoc(doc(dbFirestore,collectionName,idDoc))
     }
@@ -186,14 +206,17 @@ export const useAPI = () => {
         getClients,
         getService,
         getServices,
+        getDelServices,
         getOrder,
         getOrdersForDay,
         getOrdersForClient,
         getUsers,
+        addDelService,
         addClient,
         addService,
         addOrder,
         updateOrder,
+        addDocToDb,
         updateDocFromDb,
         deleteDocFromDb,
     };

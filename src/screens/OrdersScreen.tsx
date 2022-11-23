@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useAPI} from "../api";
 import {Order} from "../types";
 import {RoundedBlock} from "../components/RoundedBlock";
@@ -14,10 +14,11 @@ import LogoutIcon from "../assets/logout";
 import ArrowIcon from "../assets/arrow";
 import PlusIcon from "../assets/plus";
 import {useActionSheet} from "@expo/react-native-action-sheet";
+import {LinearGradient} from "expo-linear-gradient";
 
 const getNumber = ({t}: { t: any }) => +t.toString().replace(/:/g, '');
 
-export const MainScreen = ({navigation}: { navigation: any }) => {
+export const OrdersScreen = ({navigation}: { navigation: any }) => {
     const {getOrder, getOrdersForDay, deleteDocFromDb} = useAPI();
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false)
     const { showActionSheetWithOptions } = useActionSheet();
@@ -40,6 +41,7 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
     },[selectedDate])
 
     useEffect(() => {
+        console.log(selectedDate)
         orderNeedUpdate && getData()
     }, [selectedDate, user, orderNeedUpdate])
 
@@ -128,8 +130,8 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                 <TouchableOpacity
                     style={styles.datePickerArrow}
                     onPress={() => {
-                        dispatch(setSelectedDate(subDays(selectedDate, 1)))
                         dispatch(setOrderNeedUpdate(true))
+                        dispatch(setSelectedDate(subDays(selectedDate, 1)))
                     }}
                 >
                     <ArrowIcon/>
@@ -145,8 +147,8 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
                 <TouchableOpacity
                     style={styles.datePickerArrow}
                     onPress={() => {
-                        dispatch(setSelectedDate(addDays(selectedDate, 1)))
                         dispatch(setOrderNeedUpdate(true))
+                        dispatch(setSelectedDate(addDays(selectedDate, 1)))
                     }}
                 >
                     <ArrowIcon style={{transform: [{rotate: "180deg"}]}}/>
@@ -157,14 +159,22 @@ export const MainScreen = ({navigation}: { navigation: any }) => {
             {/*    <CalendarIcon/>*/}
             {/*</TouchableOpacity>*/}
         </View>
-        {orders && orders.length !== 0 ?
-            <View style={{flex: 1}}>
-                <Loader isDataLoaded={isDataLoaded}/>
-                <FlatList data={orders} renderItem={renderOrderItem}/>
-            </View>
-            :
-            isDataLoaded && <View style={styles.emptyPage}><Text style={{fontSize:20}}>Нет записей</Text></View>}
-    </View>);
+        <View style={{flex: 1}}>
+            <Loader isDataLoaded={isDataLoaded && !orderNeedUpdate}/>
+            {orders && orders.length !== 0 ?
+                <View >
+                    <LinearGradient
+                        // Background Linear Gradient
+                        colors={['white', 'rgba(255,255,255,0.9)', 'rgba(255,255,255,0.5)']}
+                        style={styles.gradient}
+                    />
+                    <FlatList style={{marginTop: 15}} data={orders} renderItem={renderOrderItem}/>
+                </View>
+                :
+                isDataLoaded && <View style={styles.emptyPage}><Text style={{fontSize: 20}}>Нет записей</Text></View>}
+
+        </View>
+        </View>);
 };
 
 const styles = StyleSheet.create({
@@ -173,7 +183,7 @@ const styles = StyleSheet.create({
     },
     topBar: {
         paddingHorizontal: "5%",
-        marginVertical: 15,
+        marginTop: 15,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -204,5 +214,13 @@ const styles = StyleSheet.create({
     },
     calendarIcon: {
         height: 30, width: 30
+    },
+    gradient: {
+        height: 25,
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 100,
     }
 });

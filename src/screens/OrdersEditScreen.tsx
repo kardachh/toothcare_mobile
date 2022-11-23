@@ -24,7 +24,7 @@ LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
 ]);
 
-export const OrderEditScreen = (props: any) => {
+export const OrdersEditScreen = (props: any) => {
     const [order, setOrder] = useState<Order | null>(null)
     const timeController = useRef<any>(null)
     const serviceController = useRef<any>(null)
@@ -42,7 +42,7 @@ export const OrderEditScreen = (props: any) => {
 
     const {updateOrder, addOrder} = useAPI()
     const dispatch = useAppDispatch()
-    const {services, clients, users} = useAppSelector(state => state.slice)
+    const {filteredServices, clients, users} = useAppSelector(state => state.slice)
     const createButtonAlert = ({
                                    title,
                                    description
@@ -217,8 +217,8 @@ export const OrderEditScreen = (props: any) => {
                             clearOnFocus={true}
                             closeOnBlur={false}
                             closeOnSubmit={false}
-                            onSelectItem={(item) => item && setSelectedService(services.find((service: Service) => service.id === item.id))}
-                            dataSet={services.map((service: Service) => ({id: service.id, title: service.name}))}
+                            onSelectItem={(item) => item && setSelectedService(filteredServices.find((service: Service) => service.id === item.id))}
+                            dataSet={filteredServices.map((service: Service) => ({id: service.id, title: service.name}))}
                         />
                     </View>
                     <View style={[styles.blockInput, {zIndex: 7}]}>

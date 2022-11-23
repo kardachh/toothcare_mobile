@@ -9,40 +9,61 @@ import {GlobalStyles} from "../GlobalStyles";
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
 import {LinearGradient} from "expo-linear-gradient";
 import PlusIcon from "../assets/plus";
+import {
+    setDelServices as setDelServicesRedux,
+    setFilteredServices,
+    setServices as setServicesRedux
+} from "../redux/store";
 import {ServicesNames} from "../navigations/screens";
 import {useActionSheet} from "@expo/react-native-action-sheet";
 
 export const ServicesScreen = (props:any) => {
-    const {services:servicesDB, user, auth} = useAppSelector(state => state.slice)
+    const {services:servicesDB, user, auth, delServices:delServicesDB, filteredServices} = useAppSelector(state => state.slice)
     const { showActionSheetWithOptions } = useActionSheet();
     const [searchText, setSearchText] = useState<string>('');
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false)
-    const [services, setServices] = useState<Service[]>(servicesDB)
-    const [filteredServices, setFilteredServices] = useState<Service[]>(services)
-    const {getServices,deleteDocFromDb} = useAPI()
+    const [filteredTextServices, setFilteredTextServices] = useState<Service[]>(servicesDB)
+
+    const {getServices, addDelService, getDelServices} = useAPI()
     const dispatch = useAppDispatch();
 
     const getData = () => {
         setIsDataLoaded(false)
-        getServices().then(r => setServices(r))
+        getDelServices().then(r=>{
+            dispatch(setDelServicesRedux(r))
+        })
+        getServices().then(r => {
+            dispatch(setServicesRedux(r))
+        })
     }
+
+    useEffect(()=>{
+        if (servicesDB && delServicesDB){
+            dispatch(setFilteredServices(
+                servicesDB.reduce((acc:Service[],item:Service)=>{
+                    if (!delServicesDB.includes(item.id!)) acc.push(item)
+                    return acc;
+                },[])
+            ))
+        }
+    },[servicesDB, delServicesDB])
 
     useEffect(() => {
         !servicesDB && getData();
-    }, [services])
+    }, [servicesDB])
 
     useEffect(() => {
         setIsDataLoaded(false)
-        setFilteredServices(services)
+        setFilteredTextServices(filteredServices)
         setIsDataLoaded(true)
-    }, [services])
+    }, [servicesDB])
 
     useEffect(() => {
         onSearchPress()
     }, [searchText])
 
     const onSearchPress = () => {
-        setFilteredServices(services.filter((service) => {
+        setFilteredTextServices(filteredServices.filter((service:Service) => {
             return service.name.includes(searchText) || service.description.includes(searchText)
         }))
     }
@@ -64,7 +85,7 @@ export const ServicesScreen = (props:any) => {
                     break;
 
                 case destructiveButtonIndex:
-                    deleteDocFromDb("services", service.id!).then(()=>getData())
+                    addDelService(service.id!).then(()=>getData())
                     break;
 
                 case cancelButtonIndex:
@@ -124,7 +145,7 @@ export const ServicesScreen = (props:any) => {
             colors={['white', 'rgba(255,255,255,0.9)', 'rgba(255,255,255,0.5)']}
             style={styles.gradient}
         />
-        <FlatList style={{paddingTop: 20}} data={filteredServices} renderItem={renderServiceItem}/>
+        <FlatList style={{paddingTop: 20}} data={filteredTextServices} renderItem={renderServiceItem}/>
     </View>
 }
 

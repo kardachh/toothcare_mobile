@@ -4,7 +4,6 @@ import Loader from "../components/Loader";
 import React, {useCallback, useEffect, useState} from "react";
 import {Client, Order, User} from "../types";
 import {RoundedBlock} from "../components/RoundedBlock";
-import {setOrderNeedUpdate} from "../redux/store";
 import {useAPI} from "../api";
 import {format, parse} from "date-fns";
 import {useAppSelector} from "../redux/hooks";

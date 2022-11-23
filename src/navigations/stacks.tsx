@@ -1,5 +1,5 @@
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {MainScreen} from "../screens/MainScreen";
+import {OrdersScreen} from "../screens/OrdersScreen";
 import {AuthScreen} from "../screens/AuthScreen";
 import {ClientsScreen} from "../screens/ClientsScreen";
 import {useAppSelector} from "../redux/hooks";
@@ -7,7 +7,7 @@ import {ClientsNames, MainNames, ServicesNames} from "./screens";
 import {ServicesScreen} from "../screens/ServicesScreen";
 import {CalendarScreen} from "../screens/CalendarScreen";
 import {ClientEditScreen} from "../screens/ClientEditScreen";
-import {OrderEditScreen} from "../screens/OrderEditScreen";
+import {OrdersEditScreen} from "../screens/OrdersEditScreen";
 import {EmploymentScheduleScreen} from "../screens/EmploymentScheduleScreen";
 import {ServicesEditScreen} from "../screens/ServicesEditScreen";
 import {ClientOrdersScreen} from "../screens/ClientOrdersScreen";
@@ -27,20 +27,20 @@ const getNavigatorOptions = (title: string, props?: any) =>
     });
 
 
-export const MainStackNavigator = () => {
+export const OrdersStackNavigator = () => {
     const {auth} = useAppSelector(state => state.slice)
 
     return (
         auth ?
             <Stack.Navigator>
-                <Stack.Screen name={MainNames.Main} component={MainScreen} options={getNavigatorOptions("Главная")}/>
+                <Stack.Screen name={MainNames.Orders} component={OrdersScreen} options={getNavigatorOptions("Главная")}/>
                 <Stack.Screen name={MainNames.Calendar} component={CalendarScreen} options={getNavigatorOptions("Выберите день")}/>
-                <Stack.Screen name={MainNames.OrderEdit} component={OrderEditScreen} options={getNavigatorOptions("Новая запись")}/>
+                <Stack.Screen name={MainNames.OrderEdit} component={OrdersEditScreen} options={getNavigatorOptions("Новая запись")}/>
                 <Stack.Screen name={MainNames.EmploymentSchedule} component={EmploymentScheduleScreen} options={getNavigatorOptions("123",{orientation:"landscape"})}/>
             </Stack.Navigator>
             : <Stack.Navigator>
                 <Stack.Screen name={MainNames.Auth} component={AuthScreen} options={getNavigatorOptions("Авторизация")}
-                              initialParams={{navigationKey: "MainScreen"}}/>
+                              initialParams={{navigationKey: MainNames.Orders}}/>
             </Stack.Navigator>
     );
 }

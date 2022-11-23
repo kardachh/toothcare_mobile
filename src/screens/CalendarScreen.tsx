@@ -2,7 +2,7 @@ import {CalendarList, LocaleConfig} from 'react-native-calendars/src';
 import {View} from 'react-native';
 import React, {FC, useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
-import {setSelectedDate} from "../redux/store";
+import {setOrderNeedUpdate, setSelectedDate} from "../redux/store";
 import dateFns, {addWeeks, format, parse, subWeeks} from "date-fns";
 import {GlobalStyles} from "../GlobalStyles";
 
@@ -82,7 +82,9 @@ export const CalendarScreen: FC<CalendarScreenProps> = ({navigation}) => {
                 }}
                 onDayPress={date => {
                     const d = parse(date.dateString, 'yyyy-MM-dd', new Date())
+
                     dispatch(setSelectedDate(d));
+                    dispatch(setOrderNeedUpdate(true));
                     navigation.goBack();
                 }}
             />

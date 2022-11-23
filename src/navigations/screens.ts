@@ -1,12 +1,12 @@
 export enum TabNames {
-    "Main" = "MainTab",
+    "Orders" = "OrdersTab",
     "Clients" = "ClientsTab",
     "Services" = "ServicesTab",
 }
 
 export enum MainNames {
     "Calendar" = "CalendarScreen",
-    'Main' = "MainScreen",
+    'Orders' = "OrdersScreen",
     "Auth" = "AuthScreen",
     "OrderEdit" = "OrderEditScreen",
     "EmploymentSchedule" = "EmploymentScheduleScreen"
