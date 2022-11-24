@@ -67,6 +67,13 @@ export const ServicesEditScreen = (props: any) => {
             })
     }
 
+    const onSetPrice = (price:string) => {
+        if (Number(price) < 0 ){
+            setPrice('0')
+        }
+        else setPrice(price)
+    }
+
     const onEditPress = async () => {
         if (!name.trim() && !description.trim() && !price.trim()) {
             createButtonAlert({title: "Не все поля заполнены", description: ""})
@@ -116,7 +123,7 @@ export const ServicesEditScreen = (props: any) => {
                             value={price}
                             autoCapitalize='none'
                             placeholder={"Введите цену в руб."}
-                            onChangeText={setPrice}
+                            onChangeText={onSetPrice}
                         />
                     </View>
                 </View>

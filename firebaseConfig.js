@@ -8,13 +8,12 @@ import { initializeApp } from 'firebase/app';
 
 // Initialize Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyAmWuAcPUfYcrG7TBP2T5KHrv15v1OQTQ4",
-    authDomain: "toothcare-mobile.firebaseapp.com",
-    databaseURL: "https://toothcare-mobile-default-rtdb.firebaseio.com",
-    projectId: "toothcare-mobile",
-    storageBucket: "toothcare-mobile.appspot.com",
-    messagingSenderId: "29674686655",
-    appId: "1:29674686655:web:152aef2822cfac04f61e0a"
+    apiKey: "AIzaSyBdV51wqbTLQhBLniawORjPESqplWVHPgk",
+    authDomain: "toothcare-mobile-9115b.firebaseapp.com",
+    projectId: "toothcare-mobile-9115b",
+    storageBucket: "toothcare-mobile-9115b.appspot.com",
+    messagingSenderId: "373833652081",
+    appId: "1:373833652081:web:469198cd906f0181c8c8d0"
 };
 
 export const appDB = initializeApp(firebaseConfig);

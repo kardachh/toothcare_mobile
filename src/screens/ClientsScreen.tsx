@@ -46,27 +46,27 @@ export const ClientsScreen = ({navigation}: { navigation: any }) => {
 
     const onPressClientItem = useCallback((client:Client) => {
         // console.log(client)
-        const options = ['Удалить', 'Изменить', 'История записей', 'Отмена'];
-        const destructiveButtonIndex = 0;
-        const cancelButtonIndex = 3;
+        const options = ['Изменить', 'История записей', 'Отмена'];
+        // const destructiveButtonIndex = 0;
+        const cancelButtonIndex = 2;
 
         showActionSheetWithOptions({
             options,
             cancelButtonIndex,
-            destructiveButtonIndex
+            // destructiveButtonIndex
         }, async (selectedIndex) => {
             switch (selectedIndex) {
-                case 1:
+                case 0:
                     navigation.push(ClientsNames.ClientEdit, {client: client, onPress: getData})
                     break;
 
-                case 2:
+                case 1:
                     navigation.push(ClientsNames.ClientOrders, {client: client})
                     break;
 
-                case destructiveButtonIndex:
-                    deleteDocFromDb("clients", client.id!).then(()=>getData())
-                    break;
+                // case destructiveButtonIndex:
+                //     deleteDocFromDb("clients", client.id!).then(()=>getData())
+                //     break;
 
                 case cancelButtonIndex:
                 // Canceled
